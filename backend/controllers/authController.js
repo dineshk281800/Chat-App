@@ -22,41 +22,50 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("passwords don't match", 400))
     }
 
+    // Find username in the database
+    const user = await UserModel.findOne({ username })
+
+    if (user) {
+        return next(new ErrorHandler("Username alreay exist", 401))
+    }
+
     const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`
     const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`
 
-    const user = await UserModel.create({
+    const newUser = await UserModel.create({
         fullname,
         username,
         email,
         password,
-        confirmPassword,
         gender,
         profilePic: gender === "male" ? boyProfilePic : girlProfilePic
     });
 
-    sendToken(user, 201, res)
+    sendToken(newUser, 201, res)
 })
 
 // Login User - /api/v1/login
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { username, password } = req.body;
+    console.log(username)
+    console.log(password)
 
-    if (!email || !password) {
-        return next(new ErrorHandler('please enter the email & password', 400))
+    if (!username || !password) {
+        return next(new ErrorHandler('please enter the username & password', 400))
     }
 
     // Find user in the database
-    const user = await UserModel.findOne({ email }).select("+password")
+    const user = await UserModel.findOne({ username }).select("+password")
 
     if (!user) {
-        return next(new ErrorHandler("Invalid email or password", 401))
+        return next(new ErrorHandler("Invalid username or password", 401))
     }
+
     // check if password is correct
     const isPasswordMatched = await user.comparePassword(password)
 
     if (!isPasswordMatched) {
-        return next(new ErrorHandler('Invalid email or password', 401))
+        return next(new ErrorHandler('Invalid username or password', 401))
     }
 
     sendToken(user, 200, res)

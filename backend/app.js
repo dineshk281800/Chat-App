@@ -25,9 +25,11 @@ app.use(express.json()); //to parse the incoming requests with JSON payloads (fr
 app.use(cookieParser())
 
 const authRoutes = require('./routes/authRoute')
+const messageRoutes = require('./routes/messageRoute')
 
 // middlewares
-app.use('/api/v1', authRoutes)
+app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/messages', messageRoutes)
 
 if (process.env.NODE_ENV === "PRODUCTION") {
     app.use(express.static(path.join(__dirname, "../frontend/build")));

@@ -14,18 +14,23 @@ const userSchema = new mongoose.Schema(
             required: [true, "Please enter your username"],
             unique: true,
         },
+        email: {
+            type: String,
+            required: [true, "Please enter your email"],
+            unique: true,
+        },
         password: {
             type: String,
             required: [true, "Please enter your password"],
             minLength: [6, "Your password must be longer than 6 characters"],
             select: false,
         },
-        confirmPassword: {
-            type: String,
-            required: [true, "Please enter your confirm password"],
-            minLength: [6, "Your password must be longer than 6 characters"],
-            select: false,
-        },
+        // confirmPassword: {
+        //     type: String,
+        //     required: [true, "Please enter your confirm password"],
+        //     minLength: [6, "Your password must be longer than 6 characters"],
+        //     select: false,
+        // },
         gender: {
             type: String,
             require: true,
@@ -67,9 +72,9 @@ userSchema.methods.getJwtToken = function () {
     })
 }
 
-// compare user password
+// compare user password(this func working on login time)
 userSchema.methods.comparePassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
+    return await bcrypt.compare(enteredPassword, this?.password || "");
 }
 
 // Generate password reset token
