@@ -26,10 +26,12 @@ app.use(cookieParser())
 
 const authRoutes = require('./routes/authRoute')
 const messageRoutes = require('./routes/messageRoute')
+const userRoutes = require('./routes/userRoute')
 
 // middlewares
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/messages', messageRoutes)
+app.use('/api/v1/users', userRoutes)
 
 if (process.env.NODE_ENV === "PRODUCTION") {
     app.use(express.static(path.join(__dirname, "../frontend/build")));

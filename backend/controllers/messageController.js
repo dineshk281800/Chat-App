@@ -50,3 +50,23 @@ exports.sendMessages = catchAsyncErrors(async (req, res, next) => {
 exports.getMessages = catchAsyncErrors(async (req, res, next) => {
     console.log("get message");
 })
+
+exports.getMessages = catchAsyncErrors(async (req, res, next) => {
+    // try {
+    const { id: userToChatId } = req.params;
+    console.log(userToChatId)
+    const senderId = req.user._id;
+    const conversation = await ConversationModel.findOne({
+        participants: { $all: [senderId, userToChatId] },
+    }).populate("messages"); //NOT REFERENCE BUT ACTUAL MESSAGE
+    if (!conversation) return res.status(200).json([]);
+
+    const messages = conversation.messages;
+    console.log(conversation)
+    res.status(200).json(messages)
+    // }
+    // catch (error) {
+    //     console.log("error in getmessage controller:", error.message);
+    //     res.status(500).json({ error: "Internal server error" })
+    // }
+})
